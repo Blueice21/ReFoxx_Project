@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keranjang Belanja - ReFoxx</title>
+    <link rel="stylesheet" href="Style.css">
+    <link rel="icon" type="png" href="RefoxxIcon.png">
+    <style>
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 22px;
+            flex: 1;
+            text-align: center;
+        }
+        .nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            padding: 8px 12px;
+            background: #f1f1f1;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .nav a:hover {
+            background: #e2e2e2;
+        }
+        .cart-container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .cart-item img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+        .total-box {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .total-text {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .btn-checkout {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-checkout:hover {
+            background-color: #218838;
+        }
+        .btn-checkout:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="nav">
+            <ul>
+                <li><a href="Index.html">Home</a></li>
+            </ul>
+        </nav>
+        <h1>Keranjang Belanja</h1>
+        <div style="width: 75px;"></div>
+    </header>
+
+    <main class="cart-container">
+        <div id="cartItems"></div>
+        <div class="total-box">
+            Total: <span id="totalHarga" style="color: green;">Rp0</span>
+        </div>
+        <button class="btn-checkout" id="btnCheckout" onclick="prosesCheckout()" disabled>Checkout</button>
+    </main>
+
+    <script src="produk.js"></script>
+    <script>
+        const cartContainer = document.getElementById('cartItems');
+        const totalHargaEl = document.getElementById('totalHarga');
+        const btnCheckout = document.getElementById('btnCheckout');
+
+        function renderCart() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cartContainer.innerHTML = "";
+
+            if (cart.length === 0) {
+                cartContainer.innerHTML = "<p>Keranjang Anda masih kosong.</p>";
+                totalHargaEl.innerText = "Rp0";
+                btnCheckout.disabled = true;
+                return;
+            }
+
+            cart.forEach((cartItem, index) => {
+                const product = produkList.find(p => p.id === cartItem.id);
+                if (!product) return;
+
+                const hargaFix = product.isDiskon ? product.hargaDiskon : product.hargaAsli;
+
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('cart-item');
+                itemDiv.innerHTML = `
+                    <input type="checkbox" class="cart-checkbox" data-price="${hargaFix}" data-qty="${cartItem.qty}" onchange="hitungTotal()">
+                    <img src="${product.gambar}" alt="${product.title}">
+                    <div style="flex: 1; margin-left: 15px;">
+                        <h4>${product.title}</h4>
+                        <p>${formatRupiah(hargaFix)} x ${cartItem.qty}</p>
+                    </div>
+                    <div>
+                        <b>${formatRupiah(hargaFix * cartItem.qty)}</b>
+                    </div>
+                `;
+                cartContainer.appendChild(itemDiv);
+            });
+
+            hitungTotal();
+        }
+
+        function hitungTotal() {
+            const checkboxes = document.querySelectorAll('.cart-checkbox');
+            let total = 0;
+            let adaYangDicentang = false;
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    const price = parseInt(cb.getAttribute('data-price'));
+                    const qty = parseInt(cb.getAttribute('data-qty'));
+                    total += price * qty;
+                    adaYangDicentang = true;
+                }
+            });
+
+            totalHargaEl.innerText = formatRupiah(total);
+            btnCheckout.disabled = !adaYangDicentang;
+        }
+        function prosesCheckout() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const checkboxes = document.querySelectorAll('.cart-checkbox');
+            
+            let checkedIds = [];
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    checkedIds.push(parseInt(cb.getAttribute('data-id')));
+                }
+            });
+
+            let sisaCart = cart.filter(item => !checkedIds.includes(item.id));
+
+            localStorage.setItem('cart', JSON.stringify(sisaCart));
+
+            alert('Checkout berhasil!');
+            
+            renderCart();
+        }
+
+        renderCart();
+    </script>
+</body>
+</html>

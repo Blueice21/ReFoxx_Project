@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReFoxx Store</title>
+    <link rel="stylesheet" href="Style.css">
+    <link rel="icon" type="png" href="RefoxxIcon.png">
+</head>
+<body>
+    <header>
+        <h1> ReFoxx</h1>
+        <img src="Refoxx.png">
+        <div class="sign">
+            <a href="HalamanLogin.html" class="signin"> Sign In</a>
+            <a href="HalamanRegister.html" class="signup"> Sign Up</a>
+        </div>
+        <br>
+
+        <nav class="nav">
+            <ul>
+                <li> <a href="Index.html"> Home</a></li>
+                <li> <a href="#produk"> Product</a></li>
+                <li> <a href="Keranjang.html"> Keranjang</a></li>
+                <li> <a href="#footer"> About Us</a></li>
+            </ul>
+            <br> <br>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="salam">
+            <h2> Selamat Datang di <div class="refoxx">ReFoxx</div> Store!</h2>
+            <p> Kami Menjual Produk Yang Berkualitas Dengan Harga Yang Terjangkau</p>
+            <br>
+            <div style="margin-top: 15px;">
+                <input type="text" id="searchInput" placeholder="Cari produk..." style="padding: 8px; width: 250px; border-radius: 5px; border: 1px solid #ccc;">
+            </div>
+        </section>
+
+        <section id="produk">
+            <h2>Rekomendasi Produk</h2>
+        </section>
+
+        <div class="item_produk" id="daftar-produk">
+        </div>
+    </main>
+
+    <footer id="footer" >
+       <div class="footer">
+            <div class="footer-info">
+                <h3>Social Media</h3>
+                <p> Instragram: <a href="https://www.instagram.com/nako212008/"> @nako212008</a></p>
+                <P> Facebook: <a href=""> nako212008</a></P>
+            </div>
+
+            <div class="footer-info">
+                <h3>More Info</h3>
+                <ul>
+                    <li><a href="">FAQ</a></li>
+                    <li><a href="">Sistem & Keamanan</a></li>
+                    <li><a href="">Kebijakan Privasi</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-info">
+                <h3>Our Contact</h3>
+                <p> WhatsApp: <a href="081111862337">+62 811-1186-2337</a></p>
+                <p> E-mail: <a href="vincentho008@gmail.com">vincentho008@gmail.com</a></p>
+            </div>
+            <div class="footer-info">
+                <h3>Reference</h3>
+                <p>Image: <a href="https://id.pinterest.com/">Pinterest</a></p>
+                <p> Logo: <a href="https://www.canva.com/">Canva Template</a></p>
+            </div>
+       </div>
+
+       <div class="copyright">
+            <p>&copy; 2024 ReFoxx. All rights reserved.</p>
+       </div>
+    </footer>
+
+    <script src="produk.js"></script>
+    <script>
+        const containerProduk = document.getElementById("daftar-produk");
+        const searchInput = document.getElementById("searchInput");
+
+        function renderProducts(items) {
+            containerProduk.innerHTML = "";
+            if (items.length === 0) {
+                containerProduk.innerHTML = "<p>Produk tidak ditemukan.</p>";
+                return;
+            }
+
+            items.forEach(produk => {
+                let hargaHTML = "";
+                if (produk.isDiskon) {
+                    hargaHTML = `<p><span class="diskon">${formatRupiah(produk.hargaAsli)}</span> <span class="harga-diskon">${formatRupiah(produk.hargaDiskon)}</span></p>`;
+                } else {
+                    hargaHTML = `<p class="harga">${formatRupiah(produk.hargaAsli)}</p>`;
+                }
+
+                const itemDiv = document.createElement("div");
+                itemDiv.classList.add("item");
+                itemDiv.innerHTML = `
+                    <a href="DetailProduk.html?id=${produk.id}">
+                        <img src="${produk.gambar}" alt="${produk.title}">
+                        <div class="desc">
+                            <h3 class="product-title">${produk.title}</h3>
+                            ${hargaHTML}
+                        </div>
+                    </a>
+                `;
+                containerProduk.appendChild(itemDiv);
+            });
+        }
+
+        searchInput.addEventListener("input", function(e) {
+            const query = e.target.value.toLowerCase();
+            const filtered = produkList.filter(p => p.title.toLowerCase().includes(query));
+            renderProducts(filtered);
+        });
+
+        renderProducts(produkList);
+    </script>
+</body>
+</html>

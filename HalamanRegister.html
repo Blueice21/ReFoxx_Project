@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refoxx Register</title>
+    <link rel="stylesheet" href="LoginStyle.css">
+    <link rel="icon" type="image/png" href="RefoxxIcon.png">
+</head>
+<body>
+    <center>
+        <form id="formRegister">
+            <div class="login" style="height: 380px;">
+                <h2> Register </h2>
+                <input type="email" id="regEmail" placeholder="E-mail" required><br><br>
+                <input type="password" id="regPassword" placeholder="Password" required><br><br>
+                <button type="submit" class="btn-login">Sign Up</button>
+                <p class="register"> Already have an account? <a href="HalamanLogin.html">Login</a> </p>
+            </div>
+        </form>
+    </center>
+
+    <script>
+        const users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+
+        document.getElementById('formRegister').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            const isExist = users.some(u => u.email === email);
+            if (isExist) {
+                alert('Email sudah terdaftar!');
+                return;
+            }
+
+            users.push({ email, password });
+            localStorage.setItem('registeredUsers', JSON.stringify(users));
+            alert('Registrasi berhasil! Silakan login.');
+            window.location.href = 'HalamanLogin.html';
+        });
+    </script>
+</body>
+</html>

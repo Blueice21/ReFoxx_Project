@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Produk - ReFoxx</title>
+    <link rel="stylesheet" href="Style.css">
+    <link rel="icon" type="png" href="RefoxxIcon.png">
+    <style>
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 22px;
+            flex: 1;
+            text-align: center;
+        }
+        .nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 10px;
+        }
+        .nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            padding: 8px 12px;
+            background: #f1f1f1;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .nav a:hover {
+            background: #e2e2e2;
+        }
+
+        .detail-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 40px;
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .detail-container img {
+            width: 300px;
+            border-radius: 10px;
+        }
+        .detail-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .badge-diskon {
+            background-color: #E72929;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .btn-cart {
+            padding: 12px 20px;
+            background-color: #E72929;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .btn-cart:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="nav">
+            <ul>
+                <li><a href="Index.html">Home</a></li>
+                <li><a href="Keranjang.html">Cart</a></li>
+            </ul>
+        </nav>
+        
+        <h1>Detail Produk</h1>
+        
+        <div style="width: 140px;"></div>
+    </header>
+
+    <main style="padding: 20px;">
+        <div class="detail-container" id="detailProduk">
+        </div>
+    </main>
+
+    <script src="produk.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = parseInt(urlParams.get('id'));
+
+        const produk = produkList.find(p => p.id === productId);
+        const detailContainer = document.getElementById('detailProduk');
+
+        if (produk) {
+            const statusDiskon = produk.isDiskon ? `<span class="badge-diskon">Ada Diskon!</span>` : `<span style="color: gray;">Harga Normal</span>`;
+            const harga = produk.isDiskon 
+                ? `<span class="diskon">${formatRupiah(produk.hargaAsli)}</span> <b style="color:green; font-size: 22px;">${formatRupiah(produk.hargaDiskon)}</b>`
+                : `<b style="color:green; font-size: 22px;">${formatRupiah(produk.hargaAsli)}</b>`;
+
+            detailContainer.innerHTML = `
+                <img src="${produk.gambar}" alt="${produk.title}">
+                <div class="detail-info">
+                    <div>
+                        <h2>${produk.title}</h2>
+                        <br>
+                        <div>${statusDiskon}</div>
+                        <p style="margin: 15px 0;">${harga}</p>
+                        <p style="color: #555;">${produk.deskripsi}</p>
+                    </div>
+                    <button class="btn-cart" onclick="tambahKeKeranjang(${produk.id})">+ Masukkan ke Keranjang</button>
+                </div>
+            `;
+        } else {
+            detailContainer.innerHTML = "<p>Produk tidak ditemukan!</p>";
+        }
+
+        function tambahKeKeranjang(id) {
+            let keranjang = JSON.parse(localStorage.getItem('cart')) || [];
+            const itemInCart = keranjang.find(item => item.id === id);
+
+            if (itemInCart) {
+                itemInCart.qty += 1;
+            } else {
+                keranjang.push({ id: id, qty: 1 });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(keranjang));
+            alert('Produk berhasil ditambahkan ke keranjang!');
+        }
+    </script>
+</body>
+</html>
